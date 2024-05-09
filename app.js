@@ -10,3 +10,8 @@ app.post('/api/connect', (req, res) => {
   console.log('connect');
   res.send('connected');
 });
+
+app.get('/api', (req, res) => {
+  console.log('data');
+  res.send('data');
+});
