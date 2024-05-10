@@ -8,9 +8,8 @@ const REDIS_PORT = 6379;
 
 // Redis 클라이언트 생성
 const client = redis.createClient({
-    //url: 'redis://rankdb-lnjkn1.serverless.apse2.cache.amazonaws.com:6379'
-    host: REDIS_ENDPOINT,
-    port: REDIS_PORT
+    address: '13.211.172.179',
+    port: 6379
 });
 
 // 연결 에러 핸들링
