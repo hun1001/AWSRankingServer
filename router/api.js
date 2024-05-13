@@ -1,19 +1,18 @@
 const router = require('express').Router();
 const DBT = require('../DB/DBTest');
+const GameID = require('../lib/GameID');
+const strJS = require('../lib/string');
 
 router.get('/', (req, res) => {
-    console.log('API 종류 및 기본 정보');
-
-    res.send('API 종류 및 기본 정보');
+    res.send(strJS.api);
 });
   
 router.get('/connect/:productName', (req, res) => {
-    console.log('connect request id');
-    res.send(DBT.Get());
+    res.send(GameID.GetGameID(req.params.productName));
 });
 
 router.post('/addRanking', (req, res) => {
-    console.log('add ranking, request body: ', req.body);
+    DBT.Add(req.body);
     res.send('result: add ranking');
 });
 
@@ -22,9 +21,14 @@ router.get('/getUserRank/:game_id/:user_id', (req, res) => {
     res.send('result: get user rank');
 });
 
-router.get('/getUserRanking/:game_id/:page/:pageCnt', (req, res) => {
+router.get('/getGameRanking/:game_id/:start/:end', (req, res) => {
     console.log('get user ranking, game_id: ', req.params.game_id, ', page: ', req.params.page, ', pageCnt: ', req.params.pageCnt);
     res.send('result: get user ranking');
+});
+
+router.get('/getGameRankingPage/:game_id/:page/:pageCnt', (req, res) => {
+    var aaa = DBT.GetGameRankingPage(req.params.game_id, req.params.page, req.params.pageCnt);
+    res.send(aaa);
 });
 
 module.exports = router;
