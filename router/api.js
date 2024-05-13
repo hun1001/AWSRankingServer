@@ -7,7 +7,7 @@ router.get('/', (req, res) => {
     res.send('API 종류 및 기본 정보');
 });
   
-router.get('/connect/:game_id', (req, res) => {
+router.get('/connect/:productName', (req, res) => {
     console.log('connect request id');
     res.send(DBT.Get());
 });
