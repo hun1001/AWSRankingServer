@@ -55,7 +55,7 @@ router.get('/getGameRanking/:game_id/:start/:end', (req, res) => {
     let start = parseInt(req.params.start);
     let end = parseInt(req.params.end);
 
-    const dbReq = DB.zRangeWithScores(game_id, start, end);
+    var dbReq = DB.zRangeWithScores(game_id, start, end);
 
     dbReq.then((result) => {
         // redis에 zRevRange가 없는 함수라 해서 일단은 이렇게 처리 sendcommand도 안됨
@@ -72,6 +72,20 @@ router.get('/getGameRanking/:game_id/:start/:end', (req, res) => {
 
 router.get('/getGameRankingPage/:game_id/:page/:pageCnt', (req, res) => {
     res.send('getGameRankingPage is not implemented yet');
+});
+
+router.get('/getUserScore/:game_id/:user_id', (req, res) => {
+    let game_id = req.params.game_id;
+    let user_id = req.params.user_id;
+
+    var dbReq = DB.zScore(game_id, user_id);
+
+    dbReq.then((result) => {
+        res.send(`${result}`);
+    }).catch((err) => {
+        console.error('get user score error: ', err);
+        res.status(500).send('Internal Server Error');
+    });
 });
 
 module.exports = router;
