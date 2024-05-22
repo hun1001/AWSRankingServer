@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
+const strJS = require('../lib/string');
 
 router.get('/', (req, res) => {
-    console.log('info about api');
-    res.send('Hello World!');
+    res.send(strJS.index);
 });
 
 module.exports = router;
