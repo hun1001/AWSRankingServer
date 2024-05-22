@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const DBT = require('../DB/DBTest');
+const DB = require('../DB/RedisConnect.js');
 const GameID = require('../lib/GameID');
 const strJS = require('../lib/string');
 
@@ -12,23 +12,66 @@ router.get('/connect/:productName', (req, res) => {
 });
 
 router.post('/addRanking', (req, res) => {
-    DBT.Add(req.body);
-    res.send('result: add ranking');
+
+    let data = req.body;
+    let game_id = data.GameID;
+    let user_id = data.UserName;
+    let score = data.Score;
+
+    var rank = DB.zAdd(game_id, {score: score, value: user_id});
+
+    rank.then((result) => {
+        res.send(`add ranking success ${result}`);
+    }).catch((err) => {
+        console.error('add ranking error: ', err);
+        res.status(500).send('Internal Server Error');
+    });
 });
 
 router.get('/getUserRank/:game_id/:user_id', (req, res) => {
-    console.log('get user rank, game_id: ', req.params.game_id, ', user_id: ', req.params.user_id);
-    res.send('result: get user rank');
+
+    let game_id = req.params.game_id;
+    let user_id = req.params.user_id;
+
+    var rank = DB.zRevRank(game_id, user_id);
+
+    rank.then((result) => {
+        if (result === null) {
+            res.send('User rank not found');
+        } else {
+            // Redis는 0부터 시작
+            result += 1;
+            res.send(`${result}`);
+        }
+    }).catch((err) => {
+        console.error('get user rank error: ', err);
+        res.status(500).send('Internal Server Error');
+    });
 });
 
 router.get('/getGameRanking/:game_id/:start/:end', (req, res) => {
-    console.log('get user ranking, game_id: ', req.params.game_id, ', page: ', req.params.page, ', pageCnt: ', req.params.pageCnt);
-    res.send('result: get user ranking');
+
+    let game_id = req.params.game_id;
+    let start = parseInt(req.params.start);
+    let end = parseInt(req.params.end);
+
+    const dbReq = DB.zRangeWithScores(game_id, start, end);
+
+    dbReq.then((result) => {
+        // redis에 zRevRange가 없는 함수라 해서 일단은 이렇게 처리 sendcommand도 안됨
+        result.sort((a, b) => {
+            return b.score - a.score;
+        });
+
+        res.send(result);
+    }).catch((err) => {
+        console.error('get game ranking error: ', err);
+        res.status(500).send('Internal Server Error');
+    });
 });
 
 router.get('/getGameRankingPage/:game_id/:page/:pageCnt', (req, res) => {
-    var aaa = DBT.GetGameRankingPage(req.params.game_id, req.params.page, req.params.pageCnt);
-    res.send(aaa);
+    res.send('getGameRankingPage is not implemented yet');
 });
 
 module.exports = router;
