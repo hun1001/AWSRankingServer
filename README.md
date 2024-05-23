@@ -5,8 +5,7 @@ AWSRankingServer는 n개의 게임에 동시에 사용가능한 랭킹을 위해
 
 ## 주요 기능
 
-/api: api들의 기능 및 설명을 확인 할 수 있습니다.
--------------
+### /api: api들의 기능 및 설명을 확인 할 수 있습니다.
 - post
     - /addRanking - 유저의 점수를 등록합니다. `{ GameID : string, UserName : string, Score : number }` json 형식으로 값을 전송합니다.
 - get
